@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const Footer = () => {
   return (
     <View style={styles.footer}>
-      <Text style={styles.footerText}>Đây là Footer</Text>
+      <Text style={styles.footerText}></Text>
     </View>
   );
 };

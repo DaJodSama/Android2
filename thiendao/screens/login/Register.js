@@ -10,14 +10,14 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native"; // Nhập đúng
 
-const LoginScreen = () => {
+const Register = () => {
 	const navigation = useNavigation(); // Sử dụng đúng
 
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
 	const handleLogin = () => {
-		navigation.navigate("TrangChu");
+		navigation.navigate("LoginScreen");
 		if (username && password) {
 			// Bạn có thể thực hiện xác thực ở đây (gửi thông tin đăng nhập đến máy chủ, v.v.)
 			alert(
@@ -28,16 +28,16 @@ const LoginScreen = () => {
 			alert("Vui lòng nhập cả tên người dùng và mật khẩu.");
 		}
 	};
-	const handleRegister = () => {
-		navigation.navigate("Register");
+	const handleForgotPassword = () => {
+		navigation.navigate("ForgotPassword");
 	};
 	return (
 		<View style={styles.home}>
-			<Image
+			{/* <Image
 				style={styles.Logo}
 				source={require("../../assets/images/logo/logo.png")}
-			/>
-			<Text style={styles.title}>Login to Your Account</Text>
+			/> */}
+			<Text style={styles.title}>Register Your Account</Text>
 
 			<TextInput
 				style={styles.input}
@@ -48,6 +48,13 @@ const LoginScreen = () => {
 
 			<TextInput
 				style={styles.input}
+				placeholder="Email"
+				onChangeText={(text) => setPassword(text)}
+				value={email}
+				secureTextEntry={true}
+			/>
+			<TextInput
+				style={styles.input}
 				placeholder="Password"
 				onChangeText={(text) => setPassword(text)}
 				value={password}
@@ -55,26 +62,16 @@ const LoginScreen = () => {
 			/>
 
 			<TouchableOpacity
-				style={styles.forgotPassword}
-				onPress={handleForgotPassword}>
-				<Text style={styles.forgotPasswordText}>Forgot Password</Text>
-			</TouchableOpacity>
-
-			<TouchableOpacity style={styles.button} onPress={handleLogin}>
-				<Text style={styles.buttonText}>Login</Text>
-			</TouchableOpacity>
-
-			<TouchableOpacity style={styles.button1}>
-				<Text style={styles.buttonText} onPress={handleRegister}>
-					Sign up
-				</Text>
+				style={styles.button}
+				onPress={handleLogin}>
+				<Text style={styles.buttonText}>Register</Text>
 			</TouchableOpacity>
 
 			<StatusBar style="auto" />
 		</View>
 	);
 };
-
+                                                                             
 const styles = StyleSheet.create({
 	home: {
 		flex: 1,
@@ -134,4 +131,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default LoginScreen;
+export default Register;

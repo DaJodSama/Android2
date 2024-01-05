@@ -1,5 +1,5 @@
 import Header from "../home/Header.js";
-import Footer from "../home/Footer.js";
+// import Footer from "../home/Footer.js";
 import React, { useState } from "react";
 import {
 	StyleSheet,
@@ -104,7 +104,6 @@ export default function TrangChu({ navigation }) {
 				keyExtractor={(item) => item.id}
 				numColumns={2}
 			/>
-			<Footer></Footer>
 		</View>
 	);
 }
