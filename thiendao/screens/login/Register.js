@@ -8,35 +8,55 @@ import {
 	TouchableOpacity,
 	Image,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // Nhập đúng
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Register = () => {
-	const navigation = useNavigation(); // Sử dụng đúng
+	const navigation = useNavigation();
 
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleLogin = () => {
-		navigation.navigate("LoginScreen");
+	const handleSignUp = async () => {
 		if (username && password) {
-			// Bạn có thể thực hiện xác thực ở đây (gửi thông tin đăng nhập đến máy chủ, v.v.)
-			alert(
-				`Login với Tên người dùng: ${username} và Mật khẩu: ${password}`
-			);
-			// Điều hướng đúng
+			// Lưu thông tin người dùng đã đăng ký vào AsyncStorage
+			await AsyncStorage.setItem("username", username);
+			await AsyncStorage.setItem("password", password);
+
+			// Thực hiện đăng nhập tự động
+			handleLogin();
 		} else {
 			alert("Vui lòng nhập cả tên người dùng và mật khẩu.");
 		}
 	};
-	const handleForgotPassword = () => {
-		navigation.navigate("ForgotPassword");
+
+	const handleLogin = async () => {
+		const storedUsername = await AsyncStorage.getItem("username");
+		const storedPassword = await AsyncStorage.getItem("password");
+
+		if (storedUsername && storedPassword) {
+			// Thực hiện logic đăng nhập (ví dụ: kiểm tra thông tin với máy chủ)
+			alert(
+				`Đăng ký với Tên người dùng: ${storedUsername} và Mật khẩu: ${storedPassword}`
+			);
+			navigation.navigate("LoginScreen"); // Điều hướng
+		} else {
+			alert(
+				"Không thể đăng nhập tự động. Vui lòng đăng nhập bằng tên người dùng và mật khẩu."
+			);
+		}
 	};
+
+	const handleLoginRedirect = () => {
+		navigation.navigate("LoginScreen");
+	};
+
 	return (
 		<View style={styles.home}>
-			{/* <Image
+			<Image
 				style={styles.Logo}
 				source={require("../../assets/images/logo/logo.png")}
-			/> */}
+			/>
 			<Text style={styles.title}>Register Your Account</Text>
 
 			<TextInput
@@ -48,22 +68,16 @@ const Register = () => {
 
 			<TextInput
 				style={styles.input}
-				placeholder="Email"
-				onChangeText={(text) => setPassword(text)}
-				value={email}
-				secureTextEntry={true}
-			/>
-			<TextInput
-				style={styles.input}
 				placeholder="Password"
 				onChangeText={(text) => setPassword(text)}
 				value={password}
 				secureTextEntry={true}
 			/>
+			<Text style={styles.textlogin} onPress={handleLoginRedirect}>
+				Have Account?
+			</Text>
 
-			<TouchableOpacity
-				style={styles.button}
-				onPress={handleLogin}>
+			<TouchableOpacity style={styles.button} onPress={handleSignUp}>
 				<Text style={styles.buttonText}>Register</Text>
 			</TouchableOpacity>
 
@@ -71,7 +85,7 @@ const Register = () => {
 		</View>
 	);
 };
-                                                                             
+
 const styles = StyleSheet.create({
 	home: {
 		flex: 1,

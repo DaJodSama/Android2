@@ -1,6 +1,6 @@
 import Header from "../home/Header.js";
 // import Footer from "../home/Footer.js";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	StyleSheet,
 	View,
@@ -8,56 +8,54 @@ import {
 	FlatList,
 	Text,
 	TouchableOpacity,
+	SafeAreaView,
 } from "react-native";
 import GioHang from "./GioHang.js";
-
-const anh = [
-	{
-		id: "1",
-		name: "Áo thun 1",
-		source: require("../../assets/images/product/image.jpg"),
-	},
-	{
-		id: "2",
-		name: "Áo thun 2",
-		source: require("../../assets/images/product/image.jpg"),
-	},
-	{
-		id: "3",
-		name: "Áo thun 3",
-		source: require("../../assets/images/product/image.jpg"),
-	},
-	{
-		id: "4",
-		name: "Áo thun 4",
-		source: require("../../assets/images/product/image.jpg"),
-	},
-	{
-		id: "5",
-		name: "Áo thun 5",
-		source: require("../../assets/images/product/image.jpg"),
-	},
-	{
-		id: "6",
-		name: "Áo thun 6",
-		source: require("../../assets/images/product/image.jpg"),
-	},
-];
+import Chitiet from "./Chitiet.js";
+import SearchBar from "./SearchBar.js";
+import List from "./List.js";
 
 export default function TrangChu({ navigation }) {
-	const renderItem = ({ item }) => (
-		<TouchableOpacity
-			onPress={() => navigation.navigate("Chitiet", { item })}
-			style={styles.itemContainer}>
-			<Image source={item.source} style={styles.image} />
-			<Text style={styles.itemText}>{item.name}</Text>
-			<TouchableOpacity
-				style={styles.addToCartButton}
-				onPress={() => handleAddToCart(item)}>
-				<Text style={styles.addToCartButtonText}>ADD TO CART </Text>
-			</TouchableOpacity>
-		</TouchableOpacity>
-	);
+	//PRODUCT
+	const [isLoading, setLoading] = useState(true);
+	const [data, setData] = useState([]);
+
+	const getProducts = async () => {
+		try {
+			const response = await fetch(
+				"https://65a0fc1d600f49256fb0a360.mockapi.io/api/products/list-product"
+			);
+			const json = await response.json();
+			setData(json);
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		getProducts();
+	}, []);
+
+	//SEARCH
+	const [searchPhrase, setSearchPhrase] = useState("");
+	const [clicked, setClicked] = useState(false);
+	const [fakeData, setFakeData] = useState();
+
+	// get data from the fake api endpoint
+	useEffect(() => {
+		const getData = async () => {
+			const apiResponse = await fetch(
+				"https://65a0fc1d600f49256fb0a360.mockapi.io/api/products/list-product"
+			);
+			const data = await apiResponse.json();
+			setFakeData(data);
+		};
+		getData();
+	}, []);
+
+	//ADD TO CART
 	const [cartItems, setCartItems] = useState([]);
 
 	const handleAddToCart = (item) => {
@@ -80,30 +78,71 @@ export default function TrangChu({ navigation }) {
 			]);
 		}
 	};
+
+	//NAVIGATE
 	const handlePressCart = () => {
 		// Chuyển đến trang giỏ hàng khi nhấn vào giỏ hàng
-		navigation.navigate("GioHang", { cartItems });
+		navigation.navigate("GioHang", { cartItems, setCartItems });
 	};
-	<GioHang route={{ params: { cartItems, setCartItems } }} />;
 
 	return (
 		<View style={styles.trangchu}>
+			{!clicked && (
+				<Text style={styles.title}>Programming Languages</Text>
+			) ? (
+				<SearchBar
+					searchPhrase={searchPhrase}
+					setSearchPhrase={setSearchPhrase}
+					clicked={clicked}
+					setCLicked={setClicked}
+				/>
+			) : (
+				<List
+					searchPhrase={searchPhrase}
+					data={fakeData}
+					setClicked={setClicked}
+				/>
+			)}
 			<Header
 				onPressCart={handlePressCart}
 				onSearch={(searchText) => console.log(searchText)}
 			/>
-
 			<Image
 				style={styles.banner}
 				source={require("../../assets/images/banner/banner.jpg")}
 			/>
-			<Text style={styles.title}>Product</Text>
-			<FlatList
-				data={anh}
-				renderItem={renderItem}
-				keyExtractor={(item) => item.id}
-				numColumns={2}
-			/>
+			{isLoading ? (
+				<Text style={styles.title}>Product</Text>
+			) : (
+				<FlatList
+					numColumns={2}
+					data={data}
+					keyExtractor={({ id }) => id}
+					scrollEnabled={true}
+					renderItem={({ item }) => (
+						<TouchableOpacity
+							onPress={() =>
+								navigation.navigate("Chitiet", {
+									item,
+									cartItems,
+									setCartItems,
+								})
+							}
+							style={styles.itemContainer}>
+							<Image style={styles.image} source={item.image} />
+							<Text style={styles.name}>{item.name}</Text>
+							<TouchableOpacity
+								style={styles.addToCartButton}
+								onPress={() => handleAddToCart(item)}>
+								<Text style={styles.addToCartButtonText}>
+									ADD TO CART{" "}
+								</Text>
+								<Text style={styles.price}>{item.price}</Text>
+							</TouchableOpacity>
+						</TouchableOpacity>
+					)}
+				/>
+			)}
 		</View>
 	);
 }
@@ -135,7 +174,7 @@ const styles = StyleSheet.create({
 		height: 180,
 		marginBottom: 5,
 	},
-	itemText: {
+	name: {
 		marginTop: 10,
 		fontSize: 16,
 		color: "black",

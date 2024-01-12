@@ -9,28 +9,43 @@ import {
 	Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native"; // Nhập đúng
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
-	const navigation = useNavigation(); // Sử dụng đúng
+	const navigation = useNavigation();
 
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleLogin = () => {
-		navigation.navigate("TrangChu");
+	const handleLogin = async () => {
 		if (username && password) {
-			// Bạn có thể thực hiện xác thực ở đây (gửi thông tin đăng nhập đến máy chủ, v.v.)
-			alert(
-				`Login với Tên người dùng: ${username} và Mật khẩu: ${password}`
-			);
-			// Điều hướng đúng
+			// Tài khoản mẫu mà bạn muốn sử dụng
+			const defaultUsername = "dajod";
+			const defaultPassword = "123";
+
+			// Lấy thông tin người dùng từ AsyncStorage
+			const storedUsername = await AsyncStorage.getItem("username");
+			const storedPassword = await AsyncStorage.getItem("password");
+
+			// Kiểm tra thông tin đăng nhập
+			if (
+				(username === storedUsername && password === storedPassword) ||
+				(username === defaultUsername && password === defaultPassword)
+			) {
+				alert("Đăng nhập thành công");
+				navigation.navigate("TrangChu");
+			} else {
+				alert("Sai tên người dùng hoặc mật khẩu");
+			}
 		} else {
-			alert("Vui lòng nhập cả tên người dùng và mật khẩu.");
+			alert("Vui lòng nhập tên người dùng và mật khẩu.");
 		}
 	};
+
 	const handleRegister = () => {
 		navigation.navigate("Register");
 	};
+
 	return (
 		<View style={styles.home}>
 			<Image
@@ -53,12 +68,6 @@ const LoginScreen = () => {
 				value={password}
 				secureTextEntry={true}
 			/>
-
-			<TouchableOpacity
-				style={styles.forgotPassword}
-				onPress={handleForgotPassword}>
-				<Text style={styles.forgotPasswordText}>Forgot Password</Text>
-			</TouchableOpacity>
 
 			<TouchableOpacity style={styles.button} onPress={handleLogin}>
 				<Text style={styles.buttonText}>Login</Text>
