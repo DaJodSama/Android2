@@ -1,4 +1,5 @@
-import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
 import {
 	View,
 	Text,
@@ -6,42 +7,20 @@ import {
 	Image,
 	TouchableOpacity,
 	StyleSheet,
+	RefreshControl,
 } from "react-native";
 
-const GioHang = ({ route }) => {
+const GioHang = ({ route, selected, navigation }) => {
 	const { cartItems, setCartItems } = route.params;
-	const [isDeletingAll, setIsDeletingAll] = useState(false);
-
-	useEffect(() => {
-		const unsubscribe = navigation.addListener("focus", () => {
-			console.log("Screen is focused!");
-		});
-
-		return unsubscribe;
-	}, [navigation]);
+	const [quantity, setQuantity] = useState(1);
 
 	const handleRemoveItem = (itemId) => {
 		setCartItems((prevItems) =>
 			prevItems.filter((item) => item.id !== itemId)
 		);
 		alert("Remove item");
-		navigation.goBack();
+		navigation.navigate("GioHang", { cartItems, setCartItems });
 	};
-
-	const handleRemoveAllItems = () => {
-		setCartItems([]);
-		alert("Remove all items");
-		navigation.goBack();
-	};
-
-	const handleSizeChange = (itemId, newSize) => {
-		setCartItems((prevItems) =>
-			prevItems.map((item) =>
-				item.id === itemId ? { ...item, size: newSize } : item
-			)
-		);
-	};
-
 	const handleQuantityIncrement = (itemId) => {
 		setCartItems((prevItems) =>
 			prevItems.map((item) =>
@@ -71,193 +50,158 @@ const GioHang = ({ route }) => {
 	};
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.title}>Giỏ Hàng</Text>
-			<FlatList
-				data={cartItems}
-				renderItem={({ item }) => (
-					<View style={styles.cartItem}>
-						<Image
-							source={{ uri: item.image }}
-							style={styles.itemImage}
-						/>
-						<View style={styles.itemInfo}>
-							<Text style={styles.itemName}>{item.name}</Text>
-							<Text style={styles.itemPrice}>{item.price}$</Text>
-							<View style={styles.row}>
-								<Text style={styles.itemSize}>
-									Size: {item.size}
-								</Text>
-								{["S", "M", "L", "XL"].map((size) => (
+		<>
+			<View style={styles.x}>
+				<Text style={styles.title}>Cart</Text>
+				<FlatList
+					data={cartItems}
+					renderItem={({ item }) => (
+						<View style={styles.container}>
+							<View style={styles.wrapperImageCheck}>
+								<TouchableOpacity style={styles.button}>
+									<Text style={styles.iconPlus}>V</Text>
+								</TouchableOpacity>
+								<Image
+									source={{ uri: item.image }}
+									style={styles.productImage}
+								/>
+							</View>
+							<View
+								style={{
+									justifyContent: "space-between",
+									marginBottom: 10,
+								}}>
+								<View>
+									<Text style={{ fontWeight: "600" }}>
+										{item.name}
+									</Text>
+									<Text>{item.price}</Text>
+								</View>
+								<View style={styles.wrapperCardBottom}>
 									<TouchableOpacity
-										key={size}
 										onPress={() =>
-											handleSizeChange(item.id, size)
-										}>
-										<Text
-											style={[
-												styles.sizeButton,
-												{
-													backgroundColor:
-														item.size === size
-															? "#3498db"
-															: "#fff",
-												},
-											]}>
-											{size}
+											handleQuantityDecrement(item.id)
+										}
+										style={styles.button}>
+										<Text style={{ fontWeight: "600" }}>
+											-
 										</Text>
 									</TouchableOpacity>
-								))}
-							</View>
-							<View style={styles.row}>
-								<Text style={styles.itemQuantity}>
-									Quantity: {item.quantity}
-								</Text>
-								<TouchableOpacity
-									onPress={() =>
-										handleQuantityDecrement(item.id)
-									}
-									style={styles.quantityButton}>
-									<Text>-</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									onPress={() =>
-										handleQuantityIncrement(item.id)
-									}
-									style={styles.quantityButton}>
-									<Text>+</Text>
-								</TouchableOpacity>
+									<Text style={{ paddingHorizontal: 12 }}>
+										{item.quantity}
+									</Text>
+									<TouchableOpacity
+										onPress={() =>
+											handleQuantityIncrement(item.id)
+										}
+										style={[
+											styles.button,
+											{ borderColor: "green" },
+										]}>
+										<Text style={styles.iconPlus}>+</Text>
+									</TouchableOpacity>
+									<TouchableOpacity
+										onPress={() =>
+											handleRemoveItem(item.id)
+										}
+										style={styles.removeButton}>
+										<Text style={styles.removeButtonText}>
+											-
+										</Text>
+									</TouchableOpacity>
+								</View>
 							</View>
 						</View>
-						<TouchableOpacity
-							onPress={() => handleRemoveItem(item.id)}
-							style={styles.removeButton}>
-							<Text style={styles.removeButtonText}>Xóa</Text>
-						</TouchableOpacity>
-					</View>
-				)}
-				keyExtractor={(item) => item.id.toString()}
-			/>
-
-			<TouchableOpacity
-				style={styles.removeAllButton}
-				onPress={handleRemoveAllItems}
-				disabled={isDeletingAll}>
-				<Text style={styles.removeAllButtonText}>Xóa Tất Cả</Text>
-			</TouchableOpacity>
-
-			<TouchableOpacity
-				style={styles.thanhToanButton}
-				onPress={handlePressThanhToan}>
-				<Text style={styles.thanhToanButtonText}>Thanh Toán</Text>
-			</TouchableOpacity>
-		</View>
+					)}
+					keyExtractor={(item) => item.id.toString()}
+				/>
+			</View>
+			<View style={styles.footer}>
+				<View style={{ flexDirection: "row", alignItems: "center" }}>
+					<TouchableOpacity style={styles.button}>
+						<Text style={styles.iconPlus}>V</Text>
+					</TouchableOpacity>
+					<Text style={[styles.textFooter, { marginRight: 10 }]}>
+						Total Price
+					</Text>
+					<Text style={styles.textFooter}>$ 0</Text>
+				</View>
+				<TouchableOpacity
+					style={[
+						styles.buttonCheckout,
+						{ backgroundColor: "orange" },
+					]}>
+					<Text style={{ color: "black" }}>Checkout</Text>
+				</TouchableOpacity>
+			</View>
+		</>
 	);
 };
 
 const styles = StyleSheet.create({
-	container: {
+	x: {
 		flex: 1,
-		padding: 10,
+		backgroundColor: "white",
 	},
-	title: {
-		fontSize: 24,
-		fontWeight: "bold",
-		marginBottom: 10,
-	},
-	cartItem: {
+	container: {
 		flexDirection: "row",
-		backgroundColor: "#f0f0f0",
-		padding: 10,
-		marginBottom: 10,
-		borderRadius: 8,
-		alignItems: "center",
+		marginBottom: 20,
+		marginTop: 10,
+		borderBottomWidth: 1,
+		borderBottomColor: "#ccc",
 	},
-	itemImage: {
+	title: { fontSize: 18, marginBottom: 20 },
+	productImage: {
 		width: 80,
 		height: 80,
-		marginRight: 10,
-		borderRadius: 8,
+		marginHorizontal: 10,
 	},
-	itemInfo: {
-		flex: 1,
+	wrapperImageCheck: {
+		flexDirection: "row",
+		alignItems: "center",
 	},
-	itemName: {
+	button: {
+		borderWidth: 0.5,
+		borderRadius: 4,
+		width: 25,
+		height: 25,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	iconPlus: {
+		color: "green",
+		fontWeight: "600",
+	},
+	wrapperCardBottom: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	footer: {
+		borderTopWidth: 0.5,
+		paddingLeft: 15,
+		borderColor: "grey",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+	},
+	textFooter: {
 		fontSize: 16,
-		fontWeight: "bold",
-		marginBottom: 5,
+		fontWeight: "600",
 	},
-	row: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 5,
-	},
-	itemSize: {
-		fontSize: 14,
-		marginRight: 10,
-	},
-	itemQuantity: {
-		fontSize: 14,
-		marginRight: 10,
-	},
-	quantityControl: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
-	quantityButton: {
-		paddingHorizontal: 10,
-		paddingVertical: 5,
-		borderWidth: 1,
-		borderRadius: 5,
-		marginRight: 5,
+	buttonCheckout: {
+		backgroundColor: "#AD40AF",
+		paddingHorizontal: 30,
+		paddingVertical: 15,
 	},
 	removeButton: {
-		justifyContent: "center",
-		alignItems: "center",
-		backgroundColor: "red",
-		padding: 8,
-		borderRadius: 4,
+		marginTop: 0,
+		backgroundColor: "#AD40AF",
+		padding: 10,
+		borderRadius: "50%",
+		left: 120,
 	},
 	removeButtonText: {
-		color: "white",
-	},
-	thanhToanButton: {
-		backgroundColor: "#3498db",
-		padding: 15,
-		borderRadius: 8,
-		alignItems: "center",
-		marginTop: 20,
-	},
-	thanhToanButtonText: {
-		color: "#fff",
-		fontSize: 18,
-		fontWeight: "bold",
-	},
-	emptyCartText: {
-		fontSize: 16,
 		textAlign: "center",
-		marginTop: 20,
-	},
-
-	sizeButton: {
-		paddingHorizontal: 10,
-		paddingVertical: 5,
-		borderWidth: 1,
-		borderRadius: 5,
-		marginRight: 5,
-		backgroundColor: "#fff",
-	},
-	removeAllButton: {
-		position: "absolute",
-		top: 630,
-		left: 10,
-		justifyContent: "center",
-		alignItems: "center",
-		backgroundColor: "red",
-		padding: 8,
-		borderRadius: 4,
-	},
-	removeAllButtonText: {
 		color: "white",
 	},
 });

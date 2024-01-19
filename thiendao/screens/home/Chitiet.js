@@ -18,17 +18,6 @@ const Chitiet = ({ route, navigation }) => {
 		setQuantity((prevQuantity) => prevQuantity + 1);
 	};
 
-	const handleSizeChange = (newSize) => {
-		setSelectedSize(newSize);
-		setCartItems((prevItems) =>
-			prevItems.map((cartItem) =>
-				cartItem.id === item.id
-					? { ...cartItem, size: newSize }
-					: cartItem
-			)
-		);
-	};
-
 	const handleAddToCart = () => {
 		const existingItem = cartItems.find(
 			(cartItem) => cartItem.id === item.id
@@ -64,41 +53,20 @@ const Chitiet = ({ route, navigation }) => {
 			<Image source={{ uri: item.image }} style={styles.image} />
 			<Text style={styles.itemText}>{item.name}</Text>
 			<Text style={styles.itemTextP}>{item.price}</Text>
-			<Text style={styles.selectedSize}>
-				Selected Size: {selectedSize}
-			</Text>
-			<View style={styles.row}>
-				<Text style={styles.itemSize}>Size: {item.size}</Text>
-				{["S", "M", "L", "XL"].map((size) => (
-					<TouchableOpacity
-						key={size}
-						onPress={() => handleSizeChange(size)}>
-						<Text
-							style={[
-								styles.sizeButton,
-								{
-									backgroundColor:
-										selectedSize === size
-											? "#3498db"
-											: "#fff",
-								},
-							]}>
-							{size}
-						</Text>
-					</TouchableOpacity>
-				))}
+			<Text style={styles.itemTextD}>{item.desc}</Text>
+			<View style={styles.edit}>
+				<TouchableOpacity
+					style={styles.add}
+					onPress={handleQuantityIncrement}>
+					<Text style={{color:"white"}}>+</Text>
+				</TouchableOpacity>
+				<Text style={styles.itemQuantity}>{quantity}</Text>
+				<TouchableOpacity
+					style={styles.remove}
+					onPress={handleQuantityDecrement}>
+					<Text style={{color:"white"}}>-</Text>
+				</TouchableOpacity>
 			</View>
-			<TouchableOpacity
-				style={styles.addToCartButton}
-				onPress={handleQuantityIncrement}>
-				<Text style={styles.addToCartButtonText}>+</Text>
-			</TouchableOpacity>
-			<Text style={styles.itemQuantity}>Quantity: {quantity}</Text>
-			<TouchableOpacity
-				style={styles.addToCartButton}
-				onPress={handleQuantityDecrement}>
-				<Text style={styles.addToCartButtonText}>-</Text>
-			</TouchableOpacity>
 			<TouchableOpacity
 				style={styles.addToCartButton}
 				onPress={handleAddToCart}>
@@ -135,35 +103,63 @@ const styles = StyleSheet.create({
 	chitiet: {
 		flex: 1,
 		alignItems: "center",
-		padding: 20,
+		backgroundColor: "white",
+		justifyContent:"center"
 	},
 	image: {
 		width: 200,
 		height: 200,
 		resizeMode: "cover",
-		marginBottom: 10,
+	},
+	edit: {
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+	},
+	add:{
+		backgroundColor: "#AD40AF",
+		padding: 10,
+		borderRadius: 50,
+	},
+	remove:{
+		backgroundColor: "#AD40AF",
+		padding: 10,
+		borderRadius: 50,
 	},
 	itemText: {
 		fontSize: 18,
 		fontWeight: "bold",
 		marginBottom: 10,
+		color: "#636363",
+	},
+	itemTextP: {
+		fontSize: 18,
+		marginBottom: 10,
+		color: "#636363",
+	},
+	itemTextD: {
+		fontSize: 18,
+		marginBottom: 10,
+		color: "#636363",
 	},
 	addToCartButton: {
-		backgroundColor: "#3498db",
+		width: 150,
+		marginTop: 10,
+		backgroundColor: "#AD40AF",
 		padding: 10,
-		borderRadius: 5,
-		marginBottom: 20,
+		borderRadius: 20,
+		marginBottom:20,
 	},
 	addToCartBtnText: {
-		color: "#fff",
 		textAlign: "center",
-		fontWeight: "bold",
-		width: 200,
+		color: "white",
+		
 	},
 	itemQuantity: {
 		//quanti
 		fontSize: 16,
-		marginBottom: 10,
+		margin:10
 	},
 	cartItemsText: {
 		fontSize: 16,

@@ -16,11 +16,14 @@ const LoginScreen = () => {
 
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [err, setErr] = useState({});
 
+	// Dữ liệu cứng
 	const handleLogin = async () => {
+		let err = {};
 		if (username && password) {
 			// Tài khoản mẫu mà bạn muốn sử dụng
-			const defaultUsername = "dajod";
+			const defaultUsername = "td";
 			const defaultPassword = "123";
 
 			// Lấy thông tin người dùng từ AsyncStorage
@@ -32,14 +35,17 @@ const LoginScreen = () => {
 				(username === storedUsername && password === storedPassword) ||
 				(username === defaultUsername && password === defaultPassword)
 			) {
-				alert("Đăng nhập thành công");
 				navigation.navigate("TrangChu");
 			} else {
-				alert("Sai tên người dùng hoặc mật khẩu");
+				err.password = "Sai tên người dùng hoặc mật khẩu";
 			}
-		} else {
-			alert("Vui lòng nhập tên người dùng và mật khẩu.");
+		} else if (!username) {
+			err.username = "Username không được để trống";
+		} else if (!password) {
+			err.password = "Password không được để trống";
 		}
+		setErr(err);
+		return Object.keys(err).length === 0;
 	};
 
 	const handleRegister = () => {
@@ -52,30 +58,42 @@ const LoginScreen = () => {
 				style={styles.Logo}
 				source={require("../../assets/images/logo/logo.png")}
 			/>
-			<Text style={styles.title}>Login to Your Account</Text>
+			<Text style={styles.title}>Login</Text>
+			<View>
+				<TextInput
+					style={styles.input}
+					placeholder="Username"
+					onChangeText={(text) => setUsername(text)}
+					value={username}
+				/>
+				{err.username ? (
+					<Text style={styles.errTextU}>{err.username}</Text>
+				) : null}
+			</View>
 
-			<TextInput
-				style={styles.input}
-				placeholder="Username"
-				onChangeText={(text) => setUsername(text)}
-				value={username}
-			/>
-
-			<TextInput
-				style={styles.input}
-				placeholder="Password"
-				onChangeText={(text) => setPassword(text)}
-				value={password}
-				secureTextEntry={true}
-			/>
+			<View style={styles.p}>
+				<TextInput
+					style={styles.inputpasword}
+					placeholder="Password"
+					onChangeText={(text) => setPassword(text)}
+					value={password}
+					secureTextEntry={true}
+				/>
+				<TouchableOpacity>
+					<Text style={styles.forgot}>Forgot?</Text>
+				</TouchableOpacity>
+				{err.password ? (
+					<Text style={styles.errTextP}>{err.password}</Text>
+				) : null}
+			</View>
 
 			<TouchableOpacity style={styles.button} onPress={handleLogin}>
 				<Text style={styles.buttonText}>Login</Text>
 			</TouchableOpacity>
 
-			<TouchableOpacity style={styles.button1}>
+			<TouchableOpacity style={styles.button}>
 				<Text style={styles.buttonText} onPress={handleRegister}>
-					Sign up
+					Register
 				</Text>
 			</TouchableOpacity>
 
@@ -87,59 +105,73 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
 	home: {
 		flex: 1,
-		backgroundColor: "#0ED2F7",
-		margin: 10,
+		padding: 0,
+		margin: 0,
+		backgroundColor: "white",
 		alignItems: "center",
-		justifyContent: "center",
 	},
 	Logo: {
-		width: 150,
+		width: 300,
 		height: 150,
-		marginBottom: 50,
-		justifyContent: "center",
-		alignItems: "center",
+		marginBottom: 20,
+		top: 50,
 	},
 	title: {
-		fontSize: 20,
+		fontSize: 28,
 		fontWeight: "bold",
 		marginBottom: 50,
-		textAlign: "center",
+		top: 70,
+		right: 110,
 	},
-	forgotPassword: {
-		width: 150,
-		left: 100,
+	p: {
+		alignItems: "center",
+	},
+	forgot: {
+		color: "#AD40AF",
+		fontWeight: "bold",
+		bottom: 4,
+		left: 123,
 	},
 	input: {
 		width: 300,
 		height: 50,
 		padding: 10,
-		marginBottom: 15,
-		backgroundColor: "#EEEEEE",
-		borderWidth: 1,
-		borderColor: "#000000",
-		borderRadius: 15,
+		borderBottomWidth: 1,
+		borderColor: "#ccc",
+		marginBottom: 20,
+		top: 50,
+	},
+
+	inputpasword: {
+		width: 300,
+		height: 50,
+		padding: 10,
+		borderBottomWidth: 1,
+		borderColor: "#ccc",
+		marginBottom: 20,
+		top: 50,
 	},
 	button: {
-		backgroundColor: "black",
-		padding: 10,
-		borderRadius: 20,
-		width: 350,
-		height: 50,
-		bottom: -10,
-	},
-	button1: {
-		backgroundColor: "black",
-		padding: 10,
-		borderRadius: 20,
-		width: 350,
-		height: 50,
-		bottom: -20,
+		width: 300,
+		backgroundColor: "#AD48AF",
+		padding: 20,
+		borderRadius: 10,
+		marginBottom: 20,
+		top: 70,
 	},
 	buttonText: {
 		color: "#fff",
-		fontSize: 16,
 		fontWeight: "bold",
 		textAlign: "center",
+		fontSize: 16,
+	},
+	errTextU: {
+		color: "red",
+		top: 40,
+	},
+	errTextP: {
+		color: "red",
+		top: 30,
 	},
 });
 

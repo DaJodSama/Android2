@@ -9,6 +9,7 @@ import {
 	Text,
 	TouchableOpacity,
 	SafeAreaView,
+	ScrollView,
 } from "react-native";
 import GioHang from "./GioHang.js";
 import Chitiet from "./Chitiet.js";
@@ -86,64 +87,49 @@ export default function TrangChu({ navigation }) {
 	};
 
 	return (
-		<View style={styles.trangchu}>
-			{!clicked && (
-				<Text style={styles.title}>Programming Languages</Text>
-			) ? (
-				<SearchBar
-					searchPhrase={searchPhrase}
-					setSearchPhrase={setSearchPhrase}
-					clicked={clicked}
-					setCLicked={setClicked}
+		<ScrollView>
+			<View style={styles.trangchu}>
+				<Header
+					onPressCart={handlePressCart}
+					onSearch={(searchText) => console.log(searchText)}
 				/>
-			) : (
-				<List
-					searchPhrase={searchPhrase}
-					data={fakeData}
-					setClicked={setClicked}
-				/>
-			)}
-			<Header
-				onPressCart={handlePressCart}
-				onSearch={(searchText) => console.log(searchText)}
-			/>
-			<Image
-				style={styles.banner}
-				source={require("../../assets/images/banner/banner.jpg")}
-			/>
-			{isLoading ? (
-				<Text style={styles.title}>Product</Text>
-			) : (
-				<FlatList
-					numColumns={2}
-					data={data}
-					keyExtractor={({ id }) => id}
-					scrollEnabled={true}
-					renderItem={({ item }) => (
-						<TouchableOpacity
-							onPress={() =>
-								navigation.navigate("Chitiet", {
-									item,
-									cartItems,
-									setCartItems,
-								})
-							}
-							style={styles.itemContainer}>
-							<Image style={styles.image} source={item.image} />
-							<Text style={styles.name}>{item.name}</Text>
+				{isLoading ? (
+					<Text style={styles.title}>Product</Text>
+				) : (
+					<FlatList
+						numColumns={2}
+						data={data}
+						keyExtractor={({ id }) => id}
+						scrollEnabled={true}
+						renderItem={({ item }) => (
 							<TouchableOpacity
-								style={styles.addToCartButton}
-								onPress={() => handleAddToCart(item)}>
-								<Text style={styles.addToCartButtonText}>
-									ADD TO CART{" "}
-								</Text>
+								onPress={() =>
+									navigation.navigate("Chitiet", {
+										item,
+										cartItems,
+										setCartItems,
+									})
+								}
+								style={styles.itemContainer}>
+								<Image
+									style={styles.image}
+									source={{ uri: item.image }}
+								/>
+								<Text style={styles.name}>{item.name}</Text>
+								<TouchableOpacity
+									style={styles.addToCartButton}
+									onPress={() => handleAddToCart(item)}>
+									<Text style={styles.addToCartButtonText}>
+										ADD TO CART{" "}
+									</Text>
+								</TouchableOpacity>
 								<Text style={styles.price}>{item.price}</Text>
 							</TouchableOpacity>
-						</TouchableOpacity>
-					)}
-				/>
-			)}
-		</View>
+						)}
+					/>
+				)}
+			</View>
+		</ScrollView>
 	);
 }
 
@@ -151,13 +137,10 @@ const styles = StyleSheet.create({
 	trangchu: {
 		flex: 1,
 		backgroundColor: "white",
-		margin: 10,
 	},
 	title: {
 		color: "black",
 		fontSize: 20,
-		marginTop: 20,
-		marginBottom: 20,
 		textAlign: "center",
 	},
 	banner: {
@@ -177,17 +160,23 @@ const styles = StyleSheet.create({
 	name: {
 		marginTop: 10,
 		fontSize: 16,
-		color: "black",
+		color: "#636363",
 		textAlign: "center",
 	},
 	addToCartButton: {
 		width: 150,
 		marginTop: 10,
-		backgroundColor: "#DDC154",
+		backgroundColor: "#AD40AF",
 		padding: 10,
 		borderRadius: 20,
 	},
 	addToCartButtonText: {
 		textAlign: "center",
+		color: "white",
+	},
+	price: {
+		top: 10,
+		fontSize: 18,
+		color: "#636363",
 	},
 });
