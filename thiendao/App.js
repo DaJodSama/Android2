@@ -8,6 +8,7 @@ import Chitiet from "./screens/home/Chitiet";
 import GioHang from "./screens/home/GioHang";
 import LoginScreen from "./screens/login/LoginScreen";
 import Register from "./screens/login/Register";
+import ThanhToan from "./screens/home/ThanhToan";
 // import ForgotPassword from "./screens/login/ForgotPassword";
 const Stack = createStackNavigator();
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
 				<Stack.Screen name="TrangChu" component={TrangChu} />
 				<Stack.Screen name="Chitiet" component={Chitiet} />
 				<Stack.Screen name="GioHang" component={GioHang} />
+				<Stack.Screen name="ThanhToan" component={ThanhToan} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

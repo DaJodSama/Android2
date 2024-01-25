@@ -49,6 +49,10 @@ const GioHang = ({ route, selected, navigation }) => {
 		}
 	};
 
+	const calculateTotalPrice = (cartItems) => {
+		return cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
+	  };
+
 	return (
 		<>
 			<View style={styles.x}>
@@ -124,9 +128,9 @@ const GioHang = ({ route, selected, navigation }) => {
 					<Text style={[styles.textFooter, { marginRight: 10 }]}>
 						Total Price
 					</Text>
-					<Text style={styles.textFooter}>$ 0</Text>
+					<Text style={styles.textFooter}>$ {calculateTotalPrice(cartItems)}</Text>
 				</View>
-				<TouchableOpacity
+				<TouchableOpacity onPress={handlePressThanhToan}
 					style={[
 						styles.buttonCheckout,
 						{ backgroundColor: "orange" },
